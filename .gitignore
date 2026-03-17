@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 모델 weight / checkpoint
+*.pth
+*.ckpt
+weights/
+checkpoints/
+
+# 데이터셋
+CSV2026_Dataset_Train/
+example_data/
+
+# output
+output/
+
+# 기타
+.DS_Store
+*.log
+wandb/
