@@ -13,7 +13,7 @@ The CSV 2026 challenge requires jointly solving two tasks on carotid plaque ultr
 2. **Classification**: Classify plaque vulnerability (low-risk: RADS 2 vs. high-risk: RADS 3–4) following the International Plaque-RADS Guidelines.
 
 ## Methods
-![Fig. 1](assets/pipeline.svg)
+![Fig. 1](assets/fig1.png)
 
 ## Environments and Requirements
 
