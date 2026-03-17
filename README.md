@@ -16,6 +16,21 @@ The CSV 2026 challenge requires jointly solving two tasks on carotid plaque ultr
 
 ## Environments and Requirements
 
+> The following specs describe the environment used for training. Other configurations may work as long as the requirements are satisfied.
+
+- **OS**: Ubuntu 22.04.5 LTS
+- **CPU**: Intel Core i7-7700 @ 3.60GHz (8 cores)
+- **RAM**: 62GB
+- **GPU**: NVIDIA GeForce RTX 2080 Ti (11GB)
+- **CUDA**: 13.0 (Driver: 580.126.09)
+- **Python**: 3.10.12
+
+To install requirements:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Dataset
 
 The dataset is a large-scale carotid ultrasound collection containing 1,500 paired cases, each consisting of longitudinal and transverse B-mode images.
