@@ -3,7 +3,7 @@
 [![HuggingFace](https://img.shields.io/badge/🤗%20Hugging%20Face-Model-yellow?style=for-the-badge)](https://huggingface.co/yws0322/csv2026)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://hub.docker.com/r/yws0322/csv2026-lpsib-solution)
 
-This repository contains the 4th place solution for the [CSV 2026 Challenge](http://119.29.231.17/index.html) (Carotid Plaque Segmentation and Vulnerability Assessment in Ultrasound).
+This repository contains the 4th place solution for the [CSV 2026 Challenge: Carotid Plaque Segmentation and Vulnerability Assessment in Ultrasound](http://119.29.231.17/index.html).
 
 ## Challenge Overview
 
@@ -65,7 +65,7 @@ The global settings are managed within the `DEFAULT_CFG` dictionary in `train.py
 
 **Data & Paths**
 - `data_root`: Path to your training dataset (default: ./CSV2026_Dataset_Train).
-- `split_json`: Path to the 4-fold cross-validation split file (default: split4.json).
+- `split_json`: Path to the 4-fold cross-validation split file.
 - `n_folds`: Total number of folds for cross-validation.
 - `checkpoint_dir_prefix`: Prefix for the directories where model weights and logs are saved.
 
@@ -85,48 +85,23 @@ The global settings are managed within the `DEFAULT_CFG` dictionary in `train.py
 
 ## Training
 
-Before training, check `DEFAULT_CFG` in `train.py` and set paths/options for your environment:
-
-- `data_root` (default: `./CSV2026_Dataset_Train`)
-- `split_json` / `n_folds`
-- `device` (`cuda`, `mps`, or fallback to available device)
-
-### Run Commands
-1. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-2. Training
+To train the model, run this command:
 ```bash
 # 1) Train a single fold (e.g. fold 0)
 python train.py --fold 0
 
-# 2) Train a fold range (e.g. fold 1, 2, 3)
-# end_fold is exclusive
+# 2) Train a specific range (e.g. folds 1, 2, 3 | end_fold is exclusive)
 python train.py --start_fold 1 --end_fold 4
 
-# 3) Train with given 4 fold cv split
+# 3) Full 4-Fold Cross-Validation
 python train.py
 ```
 
-### Output Checkpoints
-
-- Single fold: saved under `checkpoint_dir_prefix/fold_{k}_...`
-- Range/default k-fold: saved under `checkpoint_dir_prefix/kfold_summary/fold_{k}`
-- K-fold summary statistics: `checkpoint_dir_prefix/kfold_summary/statistics.txt`
-
 ## Inference
 
-`inference.py` runs submission-style prediction on HDF5 files.
+Inference can be performed via Python CLI or Docker.
 
-### Input / Output Format
-
-- Input directory: `DATA_ROOT/images/*.h5`
-- Required input keys in each file: `long_img`, `trans_img`
-- Output file: `OUTPUT_DIR/{case_name}_pred.h5`
-- Output keys: `long_mask`, `trans_mask`, `cls`
-
-### Run With CLI Arguments
+**A. Via Python CLI**
 
 ```bash
 # Example
@@ -138,39 +113,23 @@ python inference.py \
 	--gpu 0 \
 	--cls-threshold 0.8
 ```
+Arguments
+- `--data-root`: Path to dataset.
+- `--model-path`: Path to the trained `.pth` checkpoint
+- `--output-dir`: Directory to save `{patient_id}_pred.h5`
+- `--resize-target`: Target resolution for model input.
+- `--gpu`: GPU device id
+- `--cls-threshold`: Classification threshold for high-risk
 
-### Run With Environment Variables
+**B. Via Docker**
 
-```bash
-export DATA_ROOT=./CSV2026_Dataset_Val
-export MODEL_PATH=./checkpoints_convnext_unet/kfold_summary/fold_0/best_st_fold0_model.pth
-export OUTPUT_DIR=./preds
-export RESIZE_TARGET=512
-export GPU=0
-export CLS_THRESHOLD=0.8
-
-python inference.py
-```
-
-### Arguments
-
-- `--data-root`: Dataset root path (must contain `images/`)
-- `--model-path`: Checkpoint path
-- `--output-dir`: Directory to save `*_pred.h5`
-- `--resize-target`: Inference resize size (default: `512`)
-- `--gpu`: Value for `CUDA_VISIBLE_DEVICES` (default: `0`)
-- `--cls-threshold`: Classification threshold (default: `0.8`)
-
-If CLI args are omitted, `inference.py` falls back to environment variables.
-
-### Run With Docker
-1. Pull the image
+1. Pull the image:
 
 ```bash
 docker pull yws0322/csv2026-lpsib-solution
 ```
 
-2. Run inference
+2. Run container:
 
 ```bash
 docker run --rm --gpus all \
@@ -185,11 +144,8 @@ docker run --rm --gpus all \
   -e CLS_THRESHOLD=0.8 \
   yws0322/csv2026-lpsib-solution
 ```
-
-Mount your local paths to `/data`, `/weights`, `/output/preds` and set the corresponding environment variables. The container reads `DATA_ROOT/images/*.h5` as input and writes `OUTPUT_DIR/{case_name}_pred.h5` as output.
-
 ## Results
-Our method achieved the following performance on [CSV 2026: Carotid Plaque Segmentation and Vulnerability Assessment in Ultrasound](http://119.29.231.17/test.html)
+Our method achieved 4th place on the official test leaderboard of the CSV 2026 Challenge.
 
 |    Model   |   F1   | Segmentation | Time(ms) |
 |   :----:   | :----: |    :----:    |   :----: |
