@@ -26,7 +26,26 @@ The CSV 2026 challenge requires jointly solving two tasks on carotid plaque ultr
 - **CUDA**: 13.0 (Driver: 580.126.09)
 - **Python**: 3.10.12
 
-To install requirements:
+1. Create and activate a virtual environment named `magnet` (Python 3.10.12). You can use either the standard `venv` or `conda`.
+
+Option A — Using `venv`:
+
+```bash
+# create the venv (ensure Python 3.10.12 is available as `python3.10`)
+python3.10 -m venv magnet
+# activate the virtual environment
+source magnet/bin/activate
+```
+
+Option B — Using `conda`:
+
+```bash
+# create and activate conda env (requires conda/miniconda/Anaconda)
+conda create -n magnet python=3.10.12 -y
+conda activate magnet
+```
+
+2. Install requirements:
 
 ```bash
 pip install -r requirements.txt
@@ -74,6 +93,7 @@ The global settings are managed within the `DEFAULT_CFG` dictionary in `train.py
 - `img_size`: Input image dimensions.
 - `encoder_freeze_epochs`: Duration of initial encoder freeze.
 - `early_stopping_patience`: Threshold for early termination.
+ - `pretrained_encoder`: If `True`, load pretrained weights for the ConvNeXt backbone (via `timm`, typically ImageNet-pretrained). Note: the custom shallow `stem` and segmentation/classification heads are initialized separately and not replaced by the backbone pretrained weights.
 
 **Mean Teacher (Semi-Supervised Learning)**
 - `use_mean_teacher`: Enables the semi-supervised consistency
@@ -84,6 +104,8 @@ The global settings are managed within the `DEFAULT_CFG` dictionary in `train.py
 - `consistency_cls_confidence_threshold`: Minimum confidence for classification consistency.
 
 ## Training
+
+You can train the model using one of three options below.
 
 To train the model, run this command:
 ```bash

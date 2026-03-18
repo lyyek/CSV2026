@@ -231,7 +231,7 @@ class ConvNeXtUNet(nn.Module):
         in_chans: int = 1,
         num_seg_classes: int = 3,
         cls_class_num: int = 1,
-        pretrained_seg: bool = True,
+        pretrained_encoder: bool = True,
         convnext_model: str = "convnext_nano",
         cls_hidden: int = 512,
         cls_dropout: float = 0.3,
@@ -240,7 +240,7 @@ class ConvNeXtUNet(nn.Module):
     ):
         super().__init__()
 
-        self.encoder = ConvNeXtEncoder(in_chans=in_chans, model_name=convnext_model, pretrained=pretrained_seg)
+        self.encoder = ConvNeXtEncoder(in_chans=in_chans, model_name=convnext_model, pretrained=pretrained_encoder)
         c0_ch, c1_ch, c2_ch, c3_ch, c4_ch = self.encoder.out_channels
 
         self.decoder_long = UNetDecoder(c0_ch, c1_ch, c2_ch, c3_ch, c4_ch, num_seg_classes=num_seg_classes)

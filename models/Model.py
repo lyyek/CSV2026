@@ -43,7 +43,7 @@ def build_submission_model():
         in_chans=1,
         num_seg_classes=3,
         cls_class_num=1,
-        pretrained_seg=False,
+        pretrained_encoder=False,
         convnext_model="convnext_nano",
         cls_hidden=512,
         cls_dropout=0.3,

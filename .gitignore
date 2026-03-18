@@ -4,20 +4,20 @@ __pycache__/
 *.pyo
 *.pyd
 
-# 모델 weight / checkpoint
+# model weight / checkpoint
 *.pth
 *.ckpt
 weights/
 checkpoints/
 
-# 데이터셋
+# dataset
 CSV2026_Dataset_Train/
 example_data/
 
 # output
 output/
 
-# 기타
+# etc
 .DS_Store
 *.log
 wandb/
