@@ -36,21 +36,23 @@ pip install -r requirements.txt
 
 The dataset is a large-scale carotid ultrasound collection containing 1,500 paired cases, each consisting of longitudinal and transverse B-mode images.
 
+**Split**
+
 | Split | Cases | Labeled |
 |-------|:------:|:--------:|
 | Train | 1,000 | 200 (20%) |
 | Validation | 200 | - |
 | Test | 300 | - |
 
-### Data Structure
+**Folder Structure**
 
 ```
 train/
-├── image/               # 001.h5, 002.h5, ...
+├── images/               # 001.h5, 002.h5, ...
 │   └── *.h5
 │       ├── long_image   # [512, 512, 1] — longitudinal B-mode
 │       └── trans_image  # [512, 512, 1] — transverse B-mode
-├── label/               # 001_label.h5, 002_label.h5, ...
+├── labels/               # 001_label.h5, 002_label.h5, ...
 │   └── *_label.h5
 │       ├── long_mask    # [512, 512] — longitudinal segmentation mask
 │       ├── trans_mask   # [512, 512] — transverse segmentation mask
@@ -58,13 +60,30 @@ train/
 └── train.txt            # list of training file names
 ```
 
+## Configuration
+The global settings are managed within the `DEFAULT_CFG` dictionary in `train.py`. Below are the key categories:
+
+**Data & Paths**
+- `data_root`: Path to your training dataset (default: ./CSV2026_Dataset_Train).
+- `split_json`: Path to the 4-fold cross-validation split file (default: split4.json).
+- `n_folds`: Total number of folds for cross-validation.
+- `checkpoint_dir_prefix`: Prefix for the directories where model weights and logs are saved.
+
+**Architecture & Optimization**
+- `convnext_model`: Backbone variant (default: convnext_nano).
+- `img_size`: Input image dimensions.
+- `encoder_freeze_epochs`: Duration of initial encoder freeze.
+- `early_stopping_patience`: Threshold for early termination.
+
+**Mean Teacher (Semi-Supervised Learning)**
+- `use_mean_teacher`: Enables the semi-supervised consistency
+- `ema_alpha`: The decay rate for the Teacher model update.
+- `consistency_weight`: Scale for the consistency loss.
+- `consistency_rampup_epochs`: Period to scale up consistency loss.
+- `consistency_confidence_threshold`: Minimum confidence for segmentation consistency.
+- `consistency_cls_confidence_threshold`: Minimum confidence for classification consistency.
+
 ## Training
-
-`train.py` supports three execution modes:
-
-1. Single fold training via `--fold`
-2. Fold range training via `--start_fold` and `--end_fold` (Python `range` style, end is exclusive)
-3. Default 4-fold training when no arguments are given
 
 Before training, check `DEFAULT_CFG` in `train.py` and set paths/options for your environment:
 
@@ -79,14 +98,14 @@ pip install -r requirements.txt
 ```
 2. Training
 ```bash
-# 1) Train a single fold (example: fold 0)
+# 1) Train a single fold (e.g. fold 0)
 python train.py --fold 0
 
-# 2) Train a fold range (example: fold 1, 2, 3)
+# 2) Train a fold range (e.g. fold 1, 2, 3)
 # end_fold is exclusive
 python train.py --start_fold 1 --end_fold 4
 
-# 3) Run default setting (in DEFAULT_CFG: start_fold=0, end_fold=4)
+# 3) Train with given 4 fold cv split
 python train.py
 ```
 
