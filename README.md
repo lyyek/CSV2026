@@ -143,29 +143,46 @@ Arguments
 - `--gpu`: GPU device id
 - `--cls-threshold`: Classification threshold for high-risk
 
-**B. Via Docker**
+**B. Docker Inference Guide**
 
-1. Pull the image:
+- Load a trained checkpoint inside the container, run inference on `DATA_ROOT/images/*.h5` files, and save outputs to `OUTPUT_DIR`.
+
+
+Execution flow summary
+1. Container starts and runs `inference.py` (entrypoint)
+2. `inference.py` iterates over `DATA_ROOT/images/*.h5` and reads each file
+3. Build the model via `models/Model.py` and load weights from `MODEL_PATH`
+4. Run inference per case and produce `{case_name}_pred.h5` containing keys `long_mask`, `trans_mask`, and `cls`, then save to `OUTPUT_DIR`
+
+Quick run example
 
 ```bash
-docker pull yws0322/csv2026-lpsib-solution
-```
-
-2. Run container:
-
-```bash
-docker run --rm --gpus all \
-  -v /path/to/dataset:/data \
-  -v /path/to/weights:/weights \
-  -v /path/to/output:/output/preds \
-  -e DATA_ROOT=/data \
-  -e MODEL_PATH=/weights/best.pth \
-  -e OUTPUT_DIR=/output/preds \
+docker run --gpus all --rm \
+  -v /path/to/local/images:/data/images \
+  -v /path/to/local/output:/output \
+  -v /path/to/local/weights:/workspace/weights \
+  -e MODEL_PATH=/workspace/weights/my_checkpoint.pth \
   -e RESIZE_TARGET=512 \
   -e GPU=0 \
-  -e CLS_THRESHOLD=0.8 \
   yws0322/csv2026-lpsib-solution
 ```
+
+Options / volumes / environment variables
+- `-v /path/to/local/images:/data/images`: Mount host folder with input `.h5` files to the container path `DATA_ROOT/images` (e.g. `/data/images`). Each `.h5` should contain `long_img` and `trans_img` keys.
+- `-v /path/to/local/output:/output`: Mount host output directory to the container `OUTPUT_DIR`. The container will write `{case_name}_pred.h5` files here.
+- `-v /path/to/local/weights:/workspace/weights`: Mount a host folder containing checkpoint(s) (`.pth`) into the container (e.g. `/workspace/weights/best.pth`).
+- `-e MODEL_PATH=/workspace/weights/my_checkpoint.pth`: Path to the checkpoint inside the container (default: `/workspace/weights/best.pth`).
+- `-e RESIZE_TARGET=256`: Integer target size to resize model input.
+- `-e GPU=0`: Device id string mapped to `CUDA_VISIBLE_DEVICES` inside the container.
+- `--gpus all`: Allocate GPUs to the container (requires NVIDIA Docker).
+
+- Enter container and run inference manually:
+
+```bash
+docker exec -it container_name /bin/bash
+python inference.py
+```
+
 ## Results
 Our method achieved 4th place on the official test leaderboard of the CSV 2026 Challenge.
 
