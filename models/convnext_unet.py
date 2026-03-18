@@ -1,5 +1,3 @@
-# models/convnext_unet.py
-# coding=utf-8
 """ConvNeXt Encoder + U-Net (segmentation) + Bottleneck-based Classification.
 
 This module is intentionally self-contained.
